@@ -1,0 +1,10 @@
+services:
+  node:
+    container_name: devcontainer-codex-node
+    image: devcontainer-codex-node:latest
+    build:
+      dockerfile: ./docker/node/Dockerfile
+      context: .
+    volumes:
+      - ./:/app:cached
+    working_dir: /app
