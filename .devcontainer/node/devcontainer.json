@@ -1,0 +1,23 @@
+{
+  "name": "${localWorkspaceFolderBasename}-node",
+  "dockerComposeFile": [
+    "../../docker-compose.yml"
+  ],
+  "service": "node",
+  "workspaceFolder": "/${localWorkspaceFolderBasename}",
+  "overrideCommand": true,
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "EditorConfig.EditorConfig"
+      ],
+      "settings": {
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "remoteUser": "dev"
+}

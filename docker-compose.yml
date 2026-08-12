@@ -1,10 +1,73 @@
+name: ${PROJECT_NAME}
+
 services:
+  dev:
+    image: ${PROJECT_NAME}-dev:latest
+    build:
+      dockerfile: ./docker/dev/Dockerfile
+      context: .
+      args:
+        WORKSPACE_DIR: ${WORKSPACE_DIR}
+    env_file:
+      - ./docker/dev/.env
+    volumes:
+      - type: bind
+        source: ${HOST_WORKSPACE_DIR:-.}
+        target: ${WORKSPACE_DIR}
+        consistency: consistent
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: ${WORKSPACE_DIR}
+    # Codex usa bubblewrap para sandbox; o seccomp padrao do Docker bloqueia unshare/namespaces no devcontainer.
+    security_opt:
+      - seccomp=unconfined
+
   node:
-    container_name: devcontainer-codex-node
-    image: devcontainer-codex-node:latest
+    image: ${PROJECT_NAME}-node:latest
     build:
       dockerfile: ./docker/node/Dockerfile
       context: .
+      target: development
+      args:
+        WORKSPACE_DIR: ${WORKSPACE_DIR}
+    env_file:
+      - ./docker/node/.env
     volumes:
-      - ./:/app:cached
-    working_dir: /app
+      - type: bind
+        source: ${HOST_WORKSPACE_DIR:-.}/apps/node
+        target: ${WORKSPACE_DIR}
+        consistency: cached
+    working_dir: ${WORKSPACE_DIR}
+
+  php:
+    image: ${PROJECT_NAME}-php:latest
+    build:
+      dockerfile: ./docker/php/Dockerfile
+      context: .
+      target: development
+      args:
+        WORKSPACE_DIR: ${WORKSPACE_DIR}
+    env_file:
+      - ./docker/php/.env
+    volumes:
+      - type: bind
+        source: ${HOST_WORKSPACE_DIR:-.}/apps/php
+        target: ${WORKSPACE_DIR}
+        consistency: cached
+    working_dir: ${WORKSPACE_DIR}
+
+  csharp:
+    image: ${PROJECT_NAME}-csharp:latest
+    build:
+      dockerfile: ./docker/csharp/Dockerfile
+      context: .
+      target: development
+      args:
+        WORKSPACE_DIR: ${WORKSPACE_DIR}
+    env_file:
+      - ./docker/csharp/.env
+    volumes:
+      - type: bind
+        source: ${HOST_WORKSPACE_DIR:-.}/apps/csharp
+        target: ${WORKSPACE_DIR}
+        consistency: cached
+    working_dir: ${WORKSPACE_DIR}

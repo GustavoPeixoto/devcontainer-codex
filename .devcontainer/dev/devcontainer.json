@@ -1,0 +1,77 @@
+{
+  "name": "${localWorkspaceFolderBasename}-dev",
+  "dockerComposeFile": [
+    "../../docker-compose.yml"
+  ],
+  "service": "dev",
+  "workspaceFolder": "/${localWorkspaceFolderBasename}",
+  "overrideCommand": true,
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "runServices": [
+    "dev",
+    "node",
+    "php",
+    "csharp"
+  ],
+  "shutdownAction": "none",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "eamodio.gitlens",
+        "EditorConfig.EditorConfig",
+        "george-alisson.html-preview-vscode",
+        "mechatroner.rainbow-csv",
+        "mikestead.dotenv",
+        "ms-azuretools.vscode-docker",
+        "openai.chatgpt"
+      ],
+      "settings": {
+        "git.autorefresh": true,
+        "gitlens.views.repositories.autoRefresh": true,
+        "gitlens.views.repositories.showBranchComparison": false,
+        "gitlens.views.repositories.showBranches": false,
+        "gitlens.views.repositories.showCommits": false,
+        "gitlens.views.repositories.showContributors": false,
+        "gitlens.views.repositories.showIncomingActivity": false,
+        "gitlens.views.repositories.showRemotes": false,
+        "gitlens.views.repositories.showStashes": false,
+        "gitlens.views.repositories.showTags": false,
+        "gitlens.views.repositories.showUpstreamStatus": false,
+        "gitlens.views.repositories.showWorktrees": false,
+        "gitlens.views.scm.grouped.hiddenViews": {
+          "branches": true,
+          "commits": true,
+          "contributors": true,
+          "fileHistory": true,
+          "launchpad": true,
+          "remotes": true,
+          "repositories": true,
+          "searchAndCompare": true,
+          "stashes": true,
+          "tags": true,
+          "worktrees": true
+        },
+        "gitlens.views.scm.grouped.views": {
+          "branches": false,
+          "commits": false,
+          "contributors": false,
+          "fileHistory": false,
+          "launchpad": false,
+          "remotes": false,
+          "repositories": false,
+          "searchAndCompare": false,
+          "stashes": false,
+          "tags": false,
+          "worktrees": false
+        }
+      }
+    }
+  },
+  "remoteUser": "dev",
+  "mounts": [
+    "source=codex,target=/home/dev/.codex,type=volume"
+  ],
+  "postCreateCommand": "sudo chown -R dev:dev /home/dev/.codex"
+}

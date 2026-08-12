@@ -1,0 +1,28 @@
+{
+  "name": "${localWorkspaceFolderBasename}-csharp",
+  "dockerComposeFile": [
+    "../../docker-compose.yml"
+  ],
+  "service": "csharp",
+  "workspaceFolder": "/${localWorkspaceFolderBasename}",
+  "overrideCommand": true,
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "EditorConfig.EditorConfig",
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.vscodeintellicode-csharp",
+        "kreativ-software.csharpextensions"
+      ],
+      "settings": {
+        "dotnet.defaultSolution": "CsDocker.sln",
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "remoteUser": "dev"
+}
