@@ -16,9 +16,9 @@ RUN apk add --no-cache shadow \
     && groupmod --gid ${USER_GID} ${USERNAME} \
     && usermod --login ${USERNAME} --uid ${USER_UID} --gid ${USER_GID} --move-home --home /home/${USERNAME} node \
     # cria as pastas relevantes
-    && mkdir -p ${WORKSPACE_DIR} /home/${USERNAME}/.codex \
+    && mkdir -p ${WORKSPACE_DIR} /home/${USERNAME} \
     # da permissões as pastas criadas
-    && chown -R ${USERNAME}:${USERNAME} ${WORKSPACE_DIR} /home/${USERNAME}/.codex
+    && chown -R ${USERNAME}:${USERNAME} ${WORKSPACE_DIR} /home/${USERNAME}
 
 RUN corepack enable
 

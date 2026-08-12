@@ -11,14 +11,14 @@ RUN apk add --no-cache bash
 
     # shadow é necessário para usermod e groupmod
 RUN apk add --no-cache shadow \
-    # renomea o usuário node (padrão da imagem)
+    # renomea o usuário app (padrão da imagem)
     && groupmod --new-name ${USERNAME} app \
     && groupmod --gid ${USER_GID} ${USERNAME} \
     && usermod --login ${USERNAME} --uid ${USER_UID} --gid ${USER_GID} --move-home --home /home/${USERNAME} app \
     # cria as pastas relevantes
-    && mkdir -p ${WORKSPACE_DIR} /home/${USERNAME}/.codex \
+    && mkdir -p ${WORKSPACE_DIR} /home/${USERNAME} \
     # da permissões as pastas criadas
-    && chown -R ${USERNAME}:${USERNAME} ${WORKSPACE_DIR} /home/${USERNAME}/.codex
+    && chown -R ${USERNAME}:${USERNAME} ${WORKSPACE_DIR} /home/${USERNAME}
 
 WORKDIR ${WORKSPACE_DIR}
 

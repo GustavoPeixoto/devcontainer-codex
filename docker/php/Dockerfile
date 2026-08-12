@@ -13,9 +13,9 @@ RUN apk add --no-cache bash
 RUN addgroup -g ${USER_GID} ${USERNAME} \
     && adduser -D -u ${USER_UID} -G ${USERNAME} -h /home/${USERNAME} ${USERNAME} \
     # cria as pastas relevantes
-    && mkdir -p ${WORKSPACE_DIR} /home/${USERNAME}/.codex \
+    && mkdir -p ${WORKSPACE_DIR} /home/${USERNAME} \
     # da permissões as pastas criadas
-    && chown -R ${USERNAME}:${USERNAME} ${WORKSPACE_DIR} /home/${USERNAME}/.codex
+    && chown -R ${USERNAME}:${USERNAME} ${WORKSPACE_DIR} /home/${USERNAME}
 
 WORKDIR ${WORKSPACE_DIR}
 
