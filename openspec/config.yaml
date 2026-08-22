@@ -1,32 +1,39 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Este repositório é um boilerplate de mono repo usando devcontainers e agentes de desenvolvimento assistido por IA.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Fontes de verdade:
+  - Leia `AGENTS.md` como entrada operacional para agentes e colaboradores.
+  - Leia `README.md` como entrada humana da raiz do repositório.
+  - Leia `conventions/language.md` para regras detalhadas de idioma.
+  - Leia `conventions/workflow.md` para o fluxo OpenSpec.
+  - Leia `conventions/git.md` quando preparar branch, commit, push ou revisar o estado versionado.
+  - Leia `conventions/environment.md` para regras de ambientes, devcontainers, Docker, Compose, serviços e apps.
+  - Leia `conventions/artifacts.md` para regras sobre artefatos duráveis, transitórios, handoffs, rascunhos e `tmp/`.
+  - Evite duplicar convenções neste contexto; use-o como mapa das fontes canônicas e mantenha regras específicas por artefato em `rules`.
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+rules:
+  proposal:
+    - "Escreva conteúdo humano em PT-BR, preservando headings obrigatórios em inglês quando exigidos pelo OpenSpec."
+    - "Termine todo `proposal.md` com `## Open Questions`."
+    - "Em `## Open Questions`, registre prioridade, criticidade ou importância de cada ponto aberto; se não houver pendências relevantes, declare isso explicitamente."
+    - "Inclua escopo, fora de escopo, riscos e fontes de contexto consultadas quando isso ajudar continuidade futura."
+    - "Valide referências a handoffs temporários, arquivos não versionados ou contexto externo; se alguma for necessária para compreender a change, reproduza o conteúdo relevante no próprio `proposal.md`."
+  design:
+    - "Use `design.md` quando houver decisão estrutural, alternativa relevante, risco, trade-off ou mudança que outro agente precise entender depois."
+    - "Registre decisões em linguagem objetiva: contexto, decisão, alternativas consideradas, riscos e implicações."
+    - "Evite repetir documentos de convenção por extenso; referencie a fonte durável e registre apenas a decisão necessária."
+    - "Registre decisões e contexto suficiente para que `design.md` seja compreendido sem depender de arquivos temporários ou não versionados."
+  specs:
+    - "Escreva requisitos em PT-BR, mas preserve `MUST`, `SHALL`, `#### Scenario`, `WHEN`, `THEN` e `AND`."
+    - "Cada requisito deve ter pelo menos um cenário verificável."
+    - "Ao modificar requisito existente, copie o bloco inteiro para `## MODIFIED Requirements` antes de alterar."
+    - "Evite requisitos que dependam de memória conversacional; torne o comportamento esperado explícito."
+    - "Não deixe requisitos dependerem de handoffs temporários, arquivos não versionados ou contexto externo; incorpore o conteúdo normativo relevante na própria spec."
+  tasks:
+    - "Quebre tarefas em passos revisáveis e verificáveis."
+    - "Inclua leitura de contexto relevante antes de edições duráveis."
+    - "Marque tarefas como concluídas assim que forem finalizadas."
+    - "Inclua validação OpenSpec antes de considerar a change pronta."
+    - "Inclua, quando relevante, tarefa para auditar referências temporárias ou não versionadas e confirmar que os artefatos seguem autossuficientes."
