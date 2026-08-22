@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+codex_home="${CODEX_HOME:-/home/dev/.codex}"
+config_file="${codex_home}/config.toml"
+hooks_file="${codex_home}/hooks.json"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+config_template="${script_dir}/../.codex/config.toml"
+hook_template="${script_dir}/../.codex/hooks.json"
+
+if [[ ! -f "$config_template" ]]; then
+    printf 'setup-codex-context-mode: missing config template: %s\n' "$config_template" >&2
+    exit 1
+fi
+
+if [[ ! -f "$hook_template" ]]; then
+    printf 'setup-codex-context-mode: missing hook template: %s\n' "$hook_template" >&2
+    exit 1
+fi
+
+mkdir -p "$codex_home"
+touch "$config_file"
+
+python3 - "$config_file" "$hooks_file" "$config_template" "$hook_template" <<'PY'
+import json
+import re
+import shutil
+import sys
+import tomllib
+from pathlib import Path
+
+config_path = Path(sys.argv[1])
+hooks_path = Path(sys.argv[2])
+config_template_path = Path(sys.argv[3])
+hook_template_path = Path(sys.argv[4])
+
+
+def section_for(line: str) -> str | None:
+    match = re.match(r"\s*\[([^\]]+)\]\s*(?:#.*)?$", line)
+    return match.group(1) if match else None
+
+
+def ensure_toml_key(text: str, section: str, key: str, value: str) -> tuple[str, bool]:
+    lines = text.splitlines(keepends=True)
+    section_start = None
+    section_end = len(lines)
+
+    for index, line in enumerate(lines):
+        if section_for(line) == section:
+            section_start = index
+            break
+
+    if section_start is None:
+        if lines and lines[-1].strip():
+            lines.append("\n")
+        lines.extend([f"[{section}]\n", f"{key} = {value}\n"])
+        return "".join(lines), True
+
+    for index in range(section_start + 1, len(lines)):
+        if section_for(lines[index]) is not None:
+            section_end = index
+            break
+
+    key_pattern = re.compile(rf"(\s*){re.escape(key)}\s*=.*")
+    for index in range(section_start + 1, section_end):
+        line = lines[index]
+        match = key_pattern.fullmatch(line.rstrip("\n"))
+        if match:
+            replacement = f"{match.group(1)}{key} = {value}\n"
+            if line != replacement:
+                lines[index] = replacement
+                return "".join(lines), True
+            return text, False
+
+    insert_at = section_end
+    lines.insert(insert_at, f"{key} = {value}\n")
+    return "".join(lines), True
+
+
+def toml_value(value: object) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, str):
+        return json.dumps(value)
+    if isinstance(value, int | float):
+        return str(value).lower()
+    if isinstance(value, list):
+        return "[" + ", ".join(toml_value(item) for item in value) + "]"
+    raise TypeError(f"unsupported TOML template value: {value!r}")
+
+
+def iter_template_keys(table: dict[str, object], path: tuple[str, ...] = ()):
+    for key, value in table.items():
+        if isinstance(value, dict):
+            yield from iter_template_keys(value, (*path, key))
+        else:
+            if not path:
+                raise ValueError(f"top-level config key is not supported: {key}")
+            yield ".".join(path), key, toml_value(value)
+
+
+config_text = config_path.read_text(encoding="utf-8")
+config_changed = False
+config_template = tomllib.loads(config_template_path.read_text(encoding="utf-8"))
+for section, key, value in iter_template_keys(config_template):
+    config_text, changed = ensure_toml_key(config_text, section, key, value)
+    config_changed = config_changed or changed
+
+if config_changed:
+    config_path.write_text(config_text, encoding="utf-8")
+
+template = json.loads(hook_template_path.read_text(encoding="utf-8"))
+if not isinstance(template.get("hooks"), dict):
+    raise SystemExit("hook template must contain a hooks object")
+
+hooks_changed = False
+backup_path = hooks_path.with_name(f"{hooks_path.name}.before-context-mode")
+
+if hooks_path.exists():
+    original_hooks_text = hooks_path.read_text(encoding="utf-8")
+    try:
+        hooks_config = json.loads(original_hooks_text)
+    except json.JSONDecodeError:
+        if not backup_path.exists():
+            shutil.copy2(hooks_path, backup_path)
+        hooks_config = {"hooks": {}}
+        hooks_changed = True
+else:
+    original_hooks_text = ""
+    hooks_config = {"hooks": {}}
+    hooks_changed = True
+
+if not isinstance(hooks_config, dict):
+    hooks_config = {"hooks": {}}
+    hooks_changed = True
+
+existing_hooks = hooks_config.setdefault("hooks", {})
+if not isinstance(existing_hooks, dict):
+    hooks_config["hooks"] = {}
+    existing_hooks = hooks_config["hooks"]
+    hooks_changed = True
+
+for event_name, template_entries in template["hooks"].items():
+    event_entries = existing_hooks.setdefault(event_name, [])
+    if not isinstance(event_entries, list):
+        existing_hooks[event_name] = []
+        event_entries = existing_hooks[event_name]
+        hooks_changed = True
+
+    normalized_existing = {json.dumps(entry, sort_keys=True) for entry in event_entries}
+    for entry in template_entries:
+        normalized_entry = json.dumps(entry, sort_keys=True)
+        if normalized_entry not in normalized_existing:
+            event_entries.append(entry)
+            normalized_existing.add(normalized_entry)
+            hooks_changed = True
+
+if hooks_changed:
+    if hooks_path.exists() and original_hooks_text and not backup_path.exists():
+        shutil.copy2(hooks_path, backup_path)
+    hooks_path.write_text(json.dumps(hooks_config, indent=2) + "\n", encoding="utf-8")
+
+print("context-mode Codex setup complete:")
+print(f"  CODEX_HOME: {config_path.parent}")
+print(f"  config:     {config_path} ({'updated' if config_changed else 'unchanged'})")
+print(f"  hooks:      {hooks_path} ({'updated' if hooks_changed else 'unchanged'})")
+if backup_path.exists():
+    print(f"  backup:     {backup_path}")
+PY
+
+printf '\nManual hook review may be required on a fresh Docker volume.\n'
+printf 'See README.md: Hooks do context-mode.\n\n'

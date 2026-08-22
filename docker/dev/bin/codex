@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+extensions_dir="${CODEX_VSCODE_EXTENSIONS_DIR:-/home/dev/.vscode-server/extensions}"
+
+if [[ ! -d "$extensions_dir" ]]; then
+    printf 'codex: VS Code extensions directory not found: %s\n' "$extensions_dir" >&2
+    printf 'codex: install/reload the openai.chatgpt extension in this devcontainer first.\n' >&2
+    exit 127
+fi
+
+mapfile -t candidates < <(
+    find "$extensions_dir" \
+        -path '*/openai.chatgpt-*/bin/*/codex' \
+        -type f \
+        -perm /111 \
+        2>/dev/null \
+        | sort -V
+)
+
+if (( ${#candidates[@]} == 0 )); then
+    printf 'codex: no openai.chatgpt extension Codex binary found under %s\n' "$extensions_dir" >&2
+    printf 'codex: install/reload the openai.chatgpt extension in this devcontainer first.\n' >&2
+    exit 127
+fi
+
+codex_bin="${candidates[$(( ${#candidates[@]} - 1 ))]}"
+exec "$codex_bin" "$@"

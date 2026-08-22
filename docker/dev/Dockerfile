@@ -38,8 +38,12 @@ RUN mkdir -p /etc/sudoers.d \
 
 RUN corepack enable
 
+COPY docker/dev/bin/ /usr/local/bin/
+COPY docker/dev/.codex/ /usr/local/.codex/
+RUN chmod +x /usr/local/bin/codex /usr/local/bin/setup-codex-context-mode
+
 RUN git config --system --add safe.directory ${WORKSPACE_DIR}
 
-RUN yarn global add @fission-ai/openspec@1.8.0
+RUN yarn global add @fission-ai/openspec@1.8.0 context-mode@1.0.169
 
 USER ${USERNAME}

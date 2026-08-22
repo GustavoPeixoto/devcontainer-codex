@@ -25,7 +25,8 @@
         "mechatroner.rainbow-csv",
         "mikestead.dotenv",
         "ms-azuretools.vscode-docker",
-        "openai.chatgpt"
+        "openai.chatgpt",
+        "tamasfe.even-better-toml"
       ],
       "settings": {
         "git.autorefresh": true,
@@ -73,5 +74,5 @@
   "mounts": [
     "source=codex,target=/home/dev/.codex,type=volume"
   ],
-  "postCreateCommand": "sudo chown -R dev:dev /home/dev/.codex"
+  "postCreateCommand": "sudo chown -R dev:dev /home/dev/.codex && setup-codex-context-mode"
 }
