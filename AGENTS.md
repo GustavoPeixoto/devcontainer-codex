@@ -19,3 +19,4 @@ Convenções são documentos duráveis em `conventions/` que definem regras tran
 | [conventions/git.md](conventions/git.md) | Estado versionado, diff, branch, commit, push e revisão de alterações. |
 | [conventions/environment.md](conventions/environment.md) | Ambientes, infraestrutura local, Docker, Compose, devcontainers, `dev` e serviços/apps. |
 | [conventions/artifacts.md](conventions/artifacts.md) | Artefatos duráveis e transitórios, insumos, handoffs, rascunhos, `tmp/` e fontes de verdade. |
+| [conventions/context-mode.md](conventions/context-mode.md) | Uso de context-mode, ferramentas `ctx_*`, hooks do Codex e preservação da janela de contexto. |

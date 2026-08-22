@@ -11,6 +11,7 @@ context: |
   - Leia `conventions/git.md` quando preparar branch, commit, push ou revisar o estado versionado.
   - Leia `conventions/environment.md` para regras de ambientes, devcontainers, Docker, Compose, serviços e apps.
   - Leia `conventions/artifacts.md` para regras sobre artefatos duráveis, transitórios, handoffs, rascunhos e `tmp/`.
+  - Leia `conventions/context-mode.md` para regras sobre context-mode, ferramentas `ctx_*`, hooks do Codex e preservação da janela de contexto.
   - Evite duplicar convenções neste contexto; use-o como mapa das fontes canônicas e mantenha regras específicas por artefato em `rules`.
 
 rules:
