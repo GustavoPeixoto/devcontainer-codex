@@ -13,10 +13,12 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "desmondhiew.singular-plural",
         "EditorConfig.EditorConfig",
         "george-alisson.html-preview-vscode",
         "mechatroner.rainbow-csv",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "wmaurer.change-case"
       ],
       "settings": {
         "editor.formatOnSave": true,

@@ -19,14 +19,19 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        // eslint comes from the base image
+        "-dbaeumer.vscode-eslint",
+        "desmondhiew.singular-plural",
         "eamodio.gitlens",
         "EditorConfig.EditorConfig",
         "george-alisson.html-preview-vscode",
         "Gruntfuggly.todo-tree",
         "mechatroner.rainbow-csv",
+        "ms-azuretools.vscode-containers",
         "ms-azuretools.vscode-docker",
         "openai.chatgpt",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "wmaurer.change-case"
       ],
       "settings": {
         "git.autorefresh": true,
@@ -67,6 +72,8 @@
           "tags": false,
           "worktrees": false
         },
+        "js/ts.validate.enabled": false,
+        "js/ts.format.enabled": false,
         "todo-tree.ripgrep.ripgrep": "/usr/bin/rg"
       }
     }
