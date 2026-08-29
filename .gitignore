@@ -6,3 +6,5 @@
 
 tmp/*
 !tmp/.gitkeep
+
+.devcontainer/**/devcontainer-lock.json
