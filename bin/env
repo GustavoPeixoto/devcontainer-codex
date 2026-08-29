@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+services=(dev node php csharp)
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "${script_dir}/.." && pwd)"
+
+usage() {
+    printf 'Usage: %s [service...]\n' "$0"
+    printf '\n'
+    printf 'Services: %s\n' "${services[*]}"
+    printf '\n'
+    printf 'Without arguments, creates .env files for every service.\n'
+}
+
+is_supported_service() {
+    local candidate="$1"
+    local service
+
+    for service in "${services[@]}"; do
+        if [[ "$service" == "$candidate" ]]; then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+ensure_root_env() {
+    local env_file="${repo_root}/.env"
+    local project_name="${PROJECT_NAME:-$(basename "$repo_root")}"
+
+    if [[ -f "$env_file" ]]; then
+        printf 'exists  %s\n' ".env"
+        return
+    fi
+
+    {
+        printf '# Project name used by Docker Compose for images and resources.\n'
+        printf 'export PROJECT_NAME="%s"\n' "$project_name"
+        printf '\n'
+        printf '# Absolute host path bind-mounted into the dev containers.\n'
+        printf 'export HOST_WORKSPACE_DIR="%s"\n' "$repo_root"
+        printf '\n'
+        printf '# Workspace path mounted inside the containers.\n'
+        printf 'export WORKSPACE_DIR="/${PROJECT_NAME}"\n'
+    } > "$env_file"
+
+    printf 'created %s\n' ".env"
+}
+
+ensure_service_env() {
+    local service="$1"
+    local env_file="${repo_root}/docker/${service}/.env"
+    local example_file="${repo_root}/docker/${service}/.env.example"
+
+    if [[ ! -f "$example_file" ]]; then
+        printf 'missing %s\n' "docker/${service}/.env.example" >&2
+        return 1
+    fi
+
+    if [[ -f "$env_file" ]]; then
+        printf 'exists  %s\n' "docker/${service}/.env"
+        return
+    fi
+
+    cp "$example_file" "$env_file"
+    printf 'created %s\n' "docker/${service}/.env"
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    usage
+    exit 0
+fi
+
+if (( $# == 0 )); then
+    set -- "${services[@]}"
+fi
+
+for service in "$@"; do
+    if ! is_supported_service "$service"; then
+        printf 'Unsupported service: %s\n' "$service" >&2
+        usage >&2
+        exit 1
+    fi
+done
+
+ensure_root_env
+
+for service in "$@"; do
+    ensure_service_env "$service"
+done
