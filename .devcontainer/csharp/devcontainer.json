@@ -9,18 +9,31 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
   },
+  "shutdownAction": "none",
   "customizations": {
     "vscode": {
       "extensions": [
         "EditorConfig.EditorConfig",
+        "george-alisson.html-preview-vscode",
+        "kreativ-software.csharpextensions",
+        "mechatroner.rainbow-csv",
         "ms-dotnettools.csdevkit",
         "ms-dotnettools.csharp",
         "ms-dotnettools.vscodeintellicode-csharp",
-        "kreativ-software.csharpextensions"
+        "tamasfe.even-better-toml"
       ],
       "settings": {
-        "dotnet.defaultSolution": "CsDocker.sln",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "workbench.colorCustomizations": {
+          "titleBar.activeBackground": "#542442",
+          "titleBar.activeForeground": "#FFF0FA",
+          "titleBar.inactiveBackground": "#301827",
+          "titleBar.inactiveForeground": "#C9A4BA",
+          "editor.background": "#101214",
+          "sideBar.background": "#1B151A",
+          "activityBar.background": "#341B2B",
+          "activityBar.activeBorder": "#E06AB3"
+        }
       }
     }
   },

@@ -24,6 +24,8 @@ WORKDIR ${WORKSPACE_DIR}
 
 USER ${USERNAME}
 
+CMD ["sleep", "infinity"]
+
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 
 ARG WORKSPACE_DIR=/src

@@ -26,6 +26,8 @@ WORKDIR ${WORKSPACE_DIR}
 
 USER ${USERNAME}
 
+CMD ["sleep", "infinity"]
+
 FROM node:24.19.0-alpine AS production
 
 ARG WORKSPACE_DIR=/app

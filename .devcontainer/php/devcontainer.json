@@ -9,13 +9,27 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
   },
+  "shutdownAction": "none",
   "customizations": {
     "vscode": {
       "extensions": [
-        "EditorConfig.EditorConfig"
+        "EditorConfig.EditorConfig",
+        "george-alisson.html-preview-vscode",
+        "mechatroner.rainbow-csv",
+        "tamasfe.even-better-toml"
       ],
       "settings": {
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "workbench.colorCustomizations": {
+          "titleBar.activeBackground": "#34345F",
+          "titleBar.activeForeground": "#F3F2FF",
+          "titleBar.inactiveBackground": "#20213B",
+          "titleBar.inactiveForeground": "#A9A8CC",
+          "editor.background": "#101214",
+          "sideBar.background": "#161722",
+          "activityBar.background": "#202044",
+          "activityBar.activeBorder": "#777BB4"
+        }
       }
     }
   },

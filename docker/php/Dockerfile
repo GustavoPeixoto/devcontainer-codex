@@ -21,6 +21,8 @@ WORKDIR ${WORKSPACE_DIR}
 
 USER ${USERNAME}
 
+CMD ["sleep", "infinity"]
+
 FROM php:8.5.9-alpine AS production
 
 ARG WORKSPACE_DIR=/app
