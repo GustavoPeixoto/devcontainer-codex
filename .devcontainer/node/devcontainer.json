@@ -1,8 +1,6 @@
 {
   "name": "${localWorkspaceFolderBasename}-node",
-  "dockerComposeFile": [
-    "../../docker-compose.yml"
-  ],
+  "dockerComposeFile": ["../../docker-compose.yml"],
   "service": "node",
   "workspaceFolder": "/${localWorkspaceFolderBasename}",
   "overrideCommand": true,
@@ -13,13 +11,45 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "dbaeumer.vscode-eslint",
+        "desmondhiew.singular-plural",
         "EditorConfig.EditorConfig",
+        "esbenp.prettier-vscode",
         "george-alisson.html-preview-vscode",
         "mechatroner.rainbow-csv",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "wmaurer.change-case"
       ],
       "settings": {
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
         "editor.formatOnSave": true,
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
+        "eslint.workingDirectories": [
+          {
+            "mode": "auto"
+          }
+        ],
+        "js/ts.tsdk.path": "node_modules/typescript/lib",
+        "prettier.configPath": "prettier.config.json",
         "workbench.colorCustomizations": {
           "titleBar.activeBackground": "#163D2D",
           "titleBar.activeForeground": "#F0FFF6",

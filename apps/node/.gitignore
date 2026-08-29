@@ -124,16 +124,24 @@ dist
 
 # pnpm
 .pnpm-store
-# yarn v3
+# Yarn Berry
 .pnp.*
 .yarn/*
 !.yarn/patches
+!.yarn/patches/**
 !.yarn/plugins
+!.yarn/plugins/**
 !.yarn/releases
+!.yarn/releases/**
 !.yarn/sdks
+!.yarn/sdks/**
 !.yarn/versions
+!.yarn/versions/**
 
 # Vite files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+tmp/*
+!tmp/.gitkeep
