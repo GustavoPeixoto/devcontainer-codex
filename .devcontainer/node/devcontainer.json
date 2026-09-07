@@ -11,32 +11,42 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "42crunch.vscode-openapi",
         "dbaeumer.vscode-eslint",
         "desmondhiew.singular-plural",
         "EditorConfig.EditorConfig",
         "esbenp.prettier-vscode",
         "george-alisson.html-preview-vscode",
+        "inferrinizzard.prettier-sql-vscode",
         "mechatroner.rainbow-csv",
+        "redhat.vscode-yaml",
         "tamasfe.even-better-toml",
         "wmaurer.change-case"
       ],
       "settings": {
         "[javascript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
         },
         "[javascriptreact]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[json]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
         },
         "[typescript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
         },
         "[typescriptreact]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
         },
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": "explicit"
         },
-        "editor.formatOnSave": true,
+        "editor.find.loop": false,
         "eslint.validate": [
           "javascript",
           "javascriptreact",

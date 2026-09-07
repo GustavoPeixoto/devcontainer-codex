@@ -13,19 +13,28 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "42crunch.vscode-openapi",
         "desmondhiew.singular-plural",
         "EditorConfig.EditorConfig",
         "george-alisson.html-preview-vscode",
+        "inferrinizzard.prettier-sql-vscode",
         "kreativ-software.csharpextensions",
         "mechatroner.rainbow-csv",
         "ms-dotnettools.csdevkit",
         "ms-dotnettools.csharp",
         "ms-dotnettools.vscodeintellicode-csharp",
+        "redhat.vscode-yaml",
         "tamasfe.even-better-toml",
         "wmaurer.change-case"
       ],
       "settings": {
-        "editor.formatOnSave": true,
+        "[json]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
+        },
+        "[csharp]": {
+          "editor.formatOnSave": true
+        },
+        "editor.find.loop": false,
         "workbench.colorCustomizations": {
           "titleBar.activeBackground": "#542442",
           "titleBar.activeForeground": "#FFF0FA",

@@ -21,19 +21,26 @@
       "extensions": [
         // eslint comes from the base image
         "-dbaeumer.vscode-eslint",
+        "42crunch.vscode-openapi",
         "desmondhiew.singular-plural",
         "eamodio.gitlens",
         "EditorConfig.EditorConfig",
         "george-alisson.html-preview-vscode",
         "Gruntfuggly.todo-tree",
+        "inferrinizzard.prettier-sql-vscode",
         "mechatroner.rainbow-csv",
         "ms-azuretools.vscode-containers",
         "ms-azuretools.vscode-docker",
         "openai.chatgpt",
+        "redhat.vscode-yaml",
         "tamasfe.even-better-toml",
         "wmaurer.change-case"
       ],
       "settings": {
+        "[json]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
+        },
+        "editor.find.loop": false,
         "git.autorefresh": true,
         "gitlens.views.repositories.autoRefresh": true,
         "gitlens.views.repositories.showBranchComparison": false,

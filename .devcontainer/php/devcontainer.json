@@ -13,15 +13,24 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "42crunch.vscode-openapi",
         "desmondhiew.singular-plural",
         "EditorConfig.EditorConfig",
         "george-alisson.html-preview-vscode",
+        "inferrinizzard.prettier-sql-vscode",
         "mechatroner.rainbow-csv",
+        "redhat.vscode-yaml",
         "tamasfe.even-better-toml",
         "wmaurer.change-case"
       ],
       "settings": {
-        "editor.formatOnSave": true,
+        "[json]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
+        },
+        "[php]": {
+          "editor.formatOnSave": true
+        },
+        "editor.find.loop": false,
         "workbench.colorCustomizations": {
           "titleBar.activeBackground": "#34345F",
           "titleBar.activeForeground": "#F3F2FF",
