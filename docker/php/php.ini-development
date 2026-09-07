@@ -1,0 +1,9 @@
+; Sobrescritas exclusivas de desenvolvimento.
+; Carregado após o php.ini comum; opções repetidas aqui têm precedência.
+[PHP]
+display_errors = On
+display_startup_errors = On
+
+[xdebug]
+xdebug.mode = debug
+xdebug.start_with_request = trigger

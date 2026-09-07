@@ -1,0 +1,5 @@
+; Sobrescritas exclusivas de produção.
+; Carregado após o php.ini comum; opções repetidas aqui têm precedência.
+[PHP]
+display_errors = Off
+display_startup_errors = Off

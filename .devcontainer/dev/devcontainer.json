@@ -41,6 +41,10 @@
           "editor.defaultFormatter": "vscode.json-language-features"
         },
         "editor.find.loop": false,
+        "files.associations": {
+          "*.ini-development": "ini",
+          "*.ini-production": "ini"
+        },
         "git.autorefresh": true,
         "gitlens.views.repositories.autoRefresh": true,
         "gitlens.views.repositories.showBranchComparison": false,
