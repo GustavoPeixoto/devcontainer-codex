@@ -5,6 +5,8 @@
 !**/.env.example
 
 tmp/*
-!tmp/.gitkeep
+!tmp/*/
+tmp/*/**
+!tmp/**/.gitkeep
 
 .devcontainer/**/devcontainer-lock.json

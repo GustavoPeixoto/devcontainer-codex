@@ -144,4 +144,6 @@ vite.config.ts.timestamp-*
 .vite/
 
 tmp/*
-!tmp/.gitkeep
+!tmp/*/
+tmp/*/**
+!tmp/**/.gitkeep

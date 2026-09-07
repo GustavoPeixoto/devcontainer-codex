@@ -58,4 +58,6 @@ TestResult.xml
 nunit-*.xml
 
 tmp/*
-!tmp/.gitkeep
+!tmp/*/
+tmp/*/**
+!tmp/**/.gitkeep
