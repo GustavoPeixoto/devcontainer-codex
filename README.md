@@ -160,6 +160,25 @@ Open the Hooks screen, review the hooks loaded from `~/.codex/hooks.json`, and t
 
 Repeat this only when the `codex` volume is recreated or when [hooks.json](docker/dev/.codex/hooks.json) changes.
 
+## Headroom
+
+The `dev` image includes the Headroom CLI, a Codex MCP server, and a local proxy
+started whenever the Dev Container starts. The setup automatically configures
+the MCP and routes Codex inference through the proxy when the container is
+created or rebuilt. To reapply the setup or restore the previous provider:
+
+```sh
+start-headroom-proxy
+setup-codex-headroom
+# Restore the previous provider while keeping the MCP available:
+setup-codex-headroom --disable
+```
+
+Reload the Codex extension and start a new conversation after changing routing.
+Existing conversations are not migrated. Rebuild the Dev Container to install
+the integration in an existing clone. See [the Headroom convention](conventions/headroom.md)
+for usage rules, authentication, runtime options, diagnostics, and tests.
+
 ## Next Steps
 
 - TODO: Complete the `node`, `php`, and `csharp` human workspaces with linting, formatting, debugging, and runtime-specific VS Code extensions.

@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+codex_config_dir="${CODEX_HOME:-/home/dev/.codex}"
+runtime_dir="${codex_config_dir}/headroom"
+headroom_cli="${HEADROOM_CLI:-/usr/local/bin/headroom}"
+proxy_url="http://127.0.0.1:8787"
+savings_profile="${HEADROOM_SAVINGS_PROFILE:-coding}"
+proxy_mode="${HEADROOM_MODE:-cache}"
+beacon="${HEADROOM_BEACON:-off}"
+startup_timeout="${HEADROOM_STARTUP_TIMEOUT:-120}"
+
+if [[ ! "$startup_timeout" =~ ^[1-9][0-9]*$ ]]; then
+    printf 'start-headroom-proxy: HEADROOM_STARTUP_TIMEOUT deve ser um inteiro positivo.\n' >&2
+    exit 1
+fi
+
+mkdir -p "$runtime_dir"
+chmod 700 "$runtime_dir"
+exec 9>"${runtime_dir}/startup.lock"
+flock -w "$startup_timeout" 9
+
+is_ready() {
+    curl --silent --fail --max-time 2 "${proxy_url}/readyz" \
+        | jq -e '.service == "headroom-proxy" and .ready == true' >/dev/null 2>&1
+}
+
+if is_ready; then
+    printf 'Proxy Headroom já está pronto em %s\n' "$proxy_url"
+    exit 0
+fi
+
+# Uma porta ocupada não comprova que o serviço correto está pronto.
+if ! python3 - <<'PY'
+import socket
+with socket.socket() as listener:
+    listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        listener.bind(("127.0.0.1", 8787))
+    except OSError:
+        raise SystemExit(1)
+PY
+then
+    printf 'start-headroom-proxy: porta 8787 ocupada sem readiness; consulte %s/proxy.log\n' "$runtime_dir" >&2
+    exit 1
+fi
+
+command -v "$headroom_cli" >/dev/null
+touch "${runtime_dir}/proxy.log"
+chmod 600 "${runtime_dir}/proxy.log"
+# O filho não deve herdar a trava de inicialização.
+nohup env HEADROOM_SAVINGS_PROFILE="$savings_profile" HEADROOM_BEACON="$beacon" \
+    "$headroom_cli" proxy --host 127.0.0.1 --port 8787 --mode "$proxy_mode" \
+    >"${runtime_dir}/proxy.log" 2>&1 < /dev/null 9>&- &
+proxy_pid=$!
+printf '%s\n' "$proxy_pid" >"${runtime_dir}/proxy.pid"
+
+deadline=$((SECONDS + startup_timeout))
+while (( SECONDS < deadline )); do
+    if is_ready; then
+        printf 'Proxy Headroom pronto em %s (log: %s/proxy.log)\n' "$proxy_url" "$runtime_dir"
+        exit 0
+    fi
+    if ! kill -0 "$proxy_pid" 2>/dev/null; then
+        rm -f "${runtime_dir}/proxy.pid"
+        printf 'start-headroom-proxy: processo encerrado; consulte %s/proxy.log\n' "$runtime_dir" >&2
+        exit 1
+    fi
+    sleep 1
+done
+
+kill "$proxy_pid" 2>/dev/null || true
+rm -f "${runtime_dir}/proxy.pid"
+printf 'start-headroom-proxy: timeout de readiness; consulte %s/proxy.log\n' "$runtime_dir" >&2
+exit 1

@@ -96,5 +96,7 @@
   "mounts": [
     "source=codex,target=/home/dev/.codex,type=volume"
   ],
-  "postCreateCommand": "sudo chown -R dev:dev /home/dev/.codex && setup-codex-context-mode"
+  "postCreateCommand": "sudo chown -R dev:dev /home/dev/.codex && setup-codex-context-mode && setup-codex-headroom",
+  "postStartCommand": "start-headroom-proxy",
+  "waitFor": "postStartCommand"
 }

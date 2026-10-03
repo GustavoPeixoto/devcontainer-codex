@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+codex_config_dir="${CODEX_HOME:-/home/dev/.codex}"
+headroom_python="${HEADROOM_PYTHON:-/opt/headroom/bin/python}"
+
+"$headroom_python" - "$codex_config_dir" "$@" <<'PY'
+import argparse
+import os
+from pathlib import Path
+import sys
+import tempfile
+
+import tomlkit
+from headroom.providers.codex.install import codex_uses_chatgpt_auth
+
+parser = argparse.ArgumentParser(
+    description="Configura automaticamente o MCP Headroom e o roteamento pelo proxy."
+)
+action = parser.add_mutually_exclusive_group()
+action.add_argument("--enable", action="store_true", help="alias do setup padrão, mantido por compatibilidade")
+action.add_argument("--disable", action="store_true", help="restaura o provider anterior")
+parser.add_argument("--auth", choices=("auto", "chatgpt", "api-key"), default="auto")
+config_dir = Path(sys.argv[1])
+args = parser.parse_args(sys.argv[2:])
+if args.auth != "auto" and args.disable:
+    parser.error("--auth não pode ser usado com --disable")
+
+config_path = config_dir / "config.toml"
+backup_path = config_dir / "config.toml.before-headroom"
+original = config_path.read_text(encoding="utf-8") if config_path.exists() else ""
+# Parse antes de qualquer escrita: configuração inválida não pode ser substituída.
+config = tomlkit.parse(original)
+proxy_base_url = "http://127.0.0.1:8787/v1"
+
+if not args.disable:
+    auth_mode = args.auth
+    if auth_mode == "auto":
+        if codex_uses_chatgpt_auth(config_dir / "auth.json"):
+            auth_mode = "chatgpt"
+        elif os.environ.get("OPENAI_API_KEY"):
+            auth_mode = "api-key"
+        else:
+            # postCreateCommand também roda em volumes novos, antes do login.
+            # Prepare o fluxo ChatGPT; o Codex continua responsável pelo login.
+            auth_mode = "chatgpt"
+    provider = tomlkit.table()
+    provider["name"] = "Headroom local proxy"
+    provider["base_url"] = proxy_base_url
+    provider["wire_api"] = "responses"
+    provider["supports_websockets"] = True
+    if auth_mode == "chatgpt":
+        provider["requires_openai_auth"] = True
+    else:
+        provider["env_key"] = "OPENAI_API_KEY"
+    config.setdefault("model_providers", tomlkit.table())["headroom"] = provider
+    config["model_provider"] = "headroom"
+    config["openai_base_url"] = proxy_base_url
+else:
+    if not backup_path.exists():
+        raise SystemExit("Não há configuração anterior salva para desativar o roteamento.")
+    baseline = tomlkit.parse(backup_path.read_text(encoding="utf-8"))
+    # Restaura apenas o que esta integração gerencia, preservando edições posteriores.
+    for key, owned_value in (("model_provider", "headroom"), ("openai_base_url", proxy_base_url)):
+        if config.get(key) == owned_value:
+            if key in baseline:
+                config[key] = baseline[key]
+            else:
+                config.pop(key, None)
+    providers = config.get("model_providers", {})
+    current = providers.get("headroom", {})
+    if current.get("base_url") == proxy_base_url:
+        previous = baseline.get("model_providers", {}).get("headroom")
+        if previous is None:
+            providers.pop("headroom", None)
+            if not providers:
+                config.pop("model_providers", None)
+        else:
+            providers["headroom"] = previous
+
+# O MCP permanece disponível mesmo quando o roteamento está desativado.
+servers = config.setdefault("mcp_servers", tomlkit.table())
+server = servers.setdefault("headroom", tomlkit.table())
+if "url" in server:
+    raise SystemExit("O MCP 'headroom' já usa HTTP. Resolva esse conflito antes do setup.")
+server["command"] = "/usr/local/bin/headroom"
+server["args"] = ["mcp", "serve", "--proxy-url", "http://127.0.0.1:8787"]
+server.setdefault("startup_timeout_sec", 60)
+server.setdefault("env", tomlkit.table())["HEADROOM_BEACON"] = (
+    os.environ.get("HEADROOM_BEACON") or "off"
+)
+
+updated = tomlkit.dumps(config)
+config_dir.mkdir(parents=True, exist_ok=True)
+if not args.disable and not backup_path.exists():
+    # Pode conter credenciais de providers preexistentes; não amplie as permissões.
+    with backup_path.open("x", encoding="utf-8") as backup:
+        backup_path.chmod(0o600)
+        backup.write(original)
+if updated != original:
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=config_dir, delete=False) as temporary:
+        temporary_path = Path(temporary.name)
+        try:
+            temporary_path.chmod(config_path.stat().st_mode & 0o777 if config_path.exists() else 0o600)
+            temporary.write(updated)
+            temporary.flush()
+            os.fsync(temporary.fileno())
+        except BaseException:
+            temporary_path.unlink(missing_ok=True)
+            raise
+    try:
+        temporary_path.replace(config_path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+if args.disable:
+    backup_path.unlink()
+
+print(f"MCP Headroom configurado: {config_path}")
+if args.disable:
+    print("Roteamento desativado. Recarregue a extensão Codex; inicie uma nova conversa.")
+else:
+    print(f"Roteamento ativado ({auth_mode}). Recarregue a extensão Codex; inicie uma nova conversa.")
+PY

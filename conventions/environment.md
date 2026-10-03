@@ -16,6 +16,8 @@ Use os ambientes específicos de serviços ou apps do monorepo quando o objetivo
 
 O serviço `dev` representa o ambiente de desenvolvimento transversal do monorepo. Ele deve enxergar o repositório inteiro e concentrar ferramentas gerais de apoio ao desenvolvimento, como OpenSpec, ferramentas de contexto, CLIs auxiliares, automações e bibliotecas úteis.
 
+O serviço inclui context-mode para preservação de contexto e Headroom para compressão e recuperação de conteúdo. Consulte [context-mode.md](context-mode.md) e [headroom.md](headroom.md) para suas regras de uso e configuração operacional.
+
 Desenvolvimento assistido por IA deve acontecer a partir do serviço `dev`. O agente precisa operar com visão macro do repositório, porque uma alteração em um serviço ou app pode impactar outros serviços, `docker-compose.yml`, devcontainers, convenções, documentação ou artefatos OpenSpec.
 
 Não use ambientes isolados de serviços ou apps como contexto principal para desenvolvimento assistido por IA, salvo decisão explícita e justificada para uma tarefa muito restrita.
