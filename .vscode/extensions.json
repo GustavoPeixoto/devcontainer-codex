@@ -3,6 +3,7 @@
     "Gruntfuggly.todo-tree",
     "mikestead.dotenv",
     "ms-vscode-remote.remote-containers",
+    "ms-vscode-remote.remote-wsl",
     "PKief.material-icon-theme",
     "tomoki1207.pdf"
   ]

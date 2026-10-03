@@ -85,6 +85,9 @@
         },
         "js/ts.validate.enabled": false,
         "js/ts.format.enabled": false,
+        "php.validate.enable": false,
+        "php.suggest.basic": false,
+        "remote.autoForwardPorts": false,
         "todo-tree.ripgrep.ripgrep": "/usr/bin/rg"
       }
     }
